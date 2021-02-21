@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
+﻿using System.Windows.Forms;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+using System;
 
 namespace AutofocusAlgorithm
 {
@@ -16,17 +10,17 @@ namespace AutofocusAlgorithm
     public partial class LiveSceneViewer
         : Form
     {
-        private readonly (Scene, string)[] _scenes;
+        private readonly (Scene scene, string name)[] _scenes;
         private (Point start, Point end) _focusframe;
         private (Point start, Point end) _rawfocframe;
 
 
-        public LiveSceneViewer((Scene, string)[] s)
+        public LiveSceneViewer((Scene scene, string name)[] s)
         {
             InitializeComponent();
 
-            foreach (var sc in _scenes = s)
-                comboBox1.Items.Add($"{sc.Item2} ({sc.Item1.Width} x {sc.Item1.Height} pixels)");
+            foreach ((Scene scene, string name) in _scenes = s)
+                comboBox1.Items.Add($"{name} ({scene.Width} x {scene.Height} pixels)");
 
             comboBox1.SelectedIndex = 0;
         }
@@ -45,13 +39,13 @@ namespace AutofocusAlgorithm
             if (_focusframe.start != _focusframe.end)
                 using (Graphics g = Graphics.FromImage(pictureBox1.Image))
                 {
-                    Rectangle rect = new Rectangle(_focusframe.start, new Size(_focusframe.end.X - _focusframe.start.X, _focusframe.end.Y - _focusframe.start.Y));
+                    Rectangle rect = new(_focusframe.start, new Size(_focusframe.end.X - _focusframe.start.X, _focusframe.end.Y - _focusframe.start.Y));
 
                     g.FillRectangle(new SolidBrush(Color.FromArgb(0x30ff0000)), rect);
                     g.DrawRectangle(Pens.Red, rect);
                 }
 
-            pictureBox1.BackgroundImage = _scenes[comboBox1.SelectedIndex].Item1.Render(focal, falloff, falloff);
+            pictureBox1.BackgroundImage = _scenes[comboBox1.SelectedIndex].scene.Render(focal, falloff, falloff);
 
             label5.Text = $"{focal:F7}";
             label6.Text = $"{falloff:F7}";
@@ -95,7 +89,7 @@ namespace AutofocusAlgorithm
 
         private void Button1_Click(object sender, EventArgs e)
         {
-            Scene scene = _scenes[comboBox1.SelectedIndex].Item1;
+            Scene scene = _scenes[comboBox1.SelectedIndex].scene;
             AutofocusStrategy strat = AutofocusStrategy.FocusEntireImage(scene);
 
             if (_focusframe.start != _focusframe.end)
@@ -117,7 +111,7 @@ namespace AutofocusAlgorithm
 
             int wdh = 2;
 
-            foreach (var (original, derivative, focal, spectrum) in res.Frames)
+            foreach ((Bitmap original, Bitmap derivative, float focal, AutofocusSpectrum spectrum) in res.Frames)
             {
                 int imgh = 128; // original.Height;
                 int imgw = 128; // original.Width;
@@ -149,13 +143,14 @@ namespace AutofocusAlgorithm
                     SizeMode = PictureBoxSizeMode.Zoom,
                 });
                 
-                string txt = $"avg: {spectrum.Average:F3}" + Environment.NewLine +
-                             $"dev: {spectrum.StandardDeviation:F3}" + Environment.NewLine +
-                             $"ndv: {spectrum.NormalizedStandardDeviation:F3}" + Environment.NewLine +
-                             $"Σ r: {spectrum.RSum}" + Environment.NewLine +
-                             $"Σ g: {spectrum.GSum}" + Environment.NewLine +
-                             $"Σ b: {spectrum.BSum}" + Environment.NewLine +
-                             $"cnt: {spectrum.Contrast:F3}";
+                string txt = @$"
+avg: {spectrum.Average:F3}
+dev: {spectrum.StandardDeviation:F3}
+ndv: {spectrum.NormalizedStandardDeviation:F3}
+Σ r: {spectrum.RSum}
+Σ g: {spectrum.GSum}
+Σ b: {spectrum.BSum}
+cnt: {spectrum.Contrast:F3}".Trim();
 
                 panel1.Controls.Add(new Label
                 {
@@ -175,7 +170,7 @@ namespace AutofocusAlgorithm
 
         private void PictureBox1_MouseDown(object sender, MouseEventArgs e)
         {
-            if (e.Button == MouseButtons.Left)
+            if (e.Button is MouseButtons.Left)
             {
                 _rawfocframe.end =
                 _rawfocframe.start = e.Location;
@@ -188,7 +183,7 @@ namespace AutofocusAlgorithm
 
         private void PictureBox1_MouseUp(object sender, MouseEventArgs e)
         {
-            if (e.Button == MouseButtons.Left)
+            if (e.Button is MouseButtons.Left)
             {
                 _rawfocframe.end = e.Location;
 
