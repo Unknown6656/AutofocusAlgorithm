@@ -2,10 +2,13 @@
     <PropertyGroup>
         <OutputType>Exe</OutputType>
         <OutDir>$(SolutionDir)bin</OutDir>
-        <WindowsForms>true</WindowsForms>
+        <OutputType>WinExe</OutputType>
         <TargetFramework>net5.0-windows</TargetFramework>
+        <UseWindowsForms>true</UseWindowsForms>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <AutoGenerateBindingRedirects>false</AutoGenerateBindingRedirects>
+        <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+        <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     </PropertyGroup>
     <ItemGroup>
         <EmbeddedResource Include="LiveSceneViewer.resx">
