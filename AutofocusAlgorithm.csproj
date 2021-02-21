@@ -10,9 +10,4 @@
         <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
         <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     </PropertyGroup>
-    <ItemGroup>
-        <EmbeddedResource Include="LiveSceneViewer.resx">
-            <DependentUpon>LiveSceneViewer.cs</DependentUpon>
-        </EmbeddedResource>
-    </ItemGroup>
 </Project>
