@@ -67,13 +67,13 @@ namespace AutofocusAlgorithm
                             {
                                 RGB color = getsrc(x + i - ksize / 2, y + j - ksize / 2);
 
-                                rv += vkernel[i, j] * color.fR;
-                                gv += vkernel[i, j] * color.fG;
-                                bv += vkernel[i, j] * color.fB;
+                                rv += vkernel[i, j] * color.Rf;
+                                gv += vkernel[i, j] * color.Gf;
+                                bv += vkernel[i, j] * color.Bf;
 
-                                rh += hkernel[i, j] * color.fR;
-                                gh += hkernel[i, j] * color.fG;
-                                bh += hkernel[i, j] * color.fB;
+                                rh += hkernel[i, j] * color.Rf;
+                                gh += hkernel[i, j] * color.Gf;
+                                bh += hkernel[i, j] * color.Bf;
                             }
 
                         pdst[y * w + x] = new RGB
@@ -301,28 +301,10 @@ namespace AutofocusAlgorithm
     [Serializable, NativeCppClass, StructLayout(LayoutKind.Sequential)]
     public struct RGB
     {
-        private byte _r;
-        private byte _g;
-        private byte _b;
+        public byte R;
+        public byte G;
+        public byte B;
 
-        
-        public byte R
-        {
-            set => _r = value;
-            get => _r;
-        }
-
-        public byte G
-        {
-            set => _g = value;
-            get => _g;
-        }
-
-        public byte B
-        {
-            set => _b = value;
-            get => _b;
-        }
 
         public byte Gray => (byte)((R + G + B) / 3);
 
@@ -338,25 +320,25 @@ namespace AutofocusAlgorithm
                    ((uint)G << 8) | B;
         }
         
-        public double fR
+        public double Rf
         {
             set => R = (byte)(value.Constrain() * 255);
             get => R / 255.0;
         }
 
-        public double fG
+        public double Gf
         {
             set => G = (byte)(value.Constrain() * 255);
             get => G / 255.0;
         }
 
-        public double fB
+        public double Bf
         {
             set => B = (byte)(value.Constrain() * 255);
             get => B / 255.0;
         }
 
-        public double fGray => (fR + fG + fB) / 3;
+        public double Grayf => (Rf + Gf + Bf) / 3d;
 
 
         public RGB(uint argb)
@@ -368,7 +350,7 @@ namespace AutofocusAlgorithm
         }
 
         public RGB(double r, double g, double b)
-            : this() => (fR, fG, fB) = (r, g, b);
+            : this() => (Rf, Gf, Bf) = (r, g, b);
     }
 
     public enum ConvolutionMode

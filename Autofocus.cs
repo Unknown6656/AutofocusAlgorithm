@@ -1,8 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using System.Drawing;
 using System.Linq;
-using System.Text;
 using System;
 
 namespace AutofocusAlgorithm
@@ -55,16 +53,16 @@ namespace AutofocusAlgorithm
                     for (int y = 0; y < c.Height; ++y)
                         for (int x = 0; x < c.Width; ++x)
                         {
-                            int sq(int _) => _ * _;
+                            static int square(int n) => n * n;
 
                             ++spec.Raw[ptr[y * c.Width + x].Gray];
 
                             RGB* px1 = ptr + y * c.Width + (x + 1) % c.Width;
                             RGB* px2 = ptr + ((y + 1) % c.Height) * c.Width + x;
 
-                            sumr += sq(px1->R - px2->R);
-                            sumg += sq(px1->G - px2->G);
-                            sumb += sq(px1->B - px2->B);
+                            sumr += square(px1->R - px2->R);
+                            sumg += square(px1->G - px2->G);
+                            sumb += square(px1->B - px2->B);
                         }
 
                     spec.RSum = sumr;
